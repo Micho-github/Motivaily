@@ -1,129 +1,213 @@
+"use client";
 import React from "react";
 import { Button } from "../ui/button";
 import { FcGoogle as ChromeIcon } from "react-icons/fc";
 import { IoLogoGithub as GithubIcon } from "react-icons/io";
 import { Label } from "../ui/label";
 import { Input } from "../ui/input";
-import Link from "next/link";
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-import { headers } from "next/headers";
-import Chance from 'chance';
+import { createClient } from "@/utils/supabase/client";
+import { redirect, useRouter } from "next/navigation";
+import Chance from "chance";
+import { useFormik } from "formik";
+import SignupSchema from "../Schemas/SignupSchema";
+import { ClipLoader } from "react-spinners";
+
+interface Values {
+  email: string;
+  password: string;
+}
 
 export default function SignUpForm() {
-  const signUp = async (formData: FormData) => {
-    "use server";
+  const [SubmitLoading, SetSubmitLoading] = React.useState(false);
+  const [FormResponse, SetFormResponse] = React.useState("");
+  const router = useRouter();
 
-    const origin = headers().get("origin");
-    const email = formData.get("email") as string;
-    const password = formData.get("password") as string;
+  const signUp = async (values: Values) => {
+    SetSubmitLoading(true);
+    const origin = window.location.origin;
     const supabase = createClient();
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${origin}/auth/callback`,
-      },
-    });
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: values.email,
+        password: values.password,
+        options: {
+          data: {
+            name: GenerateUsername(),
+          },
+          emailRedirectTo: `${origin}/auth/callback`,
+        },
+      });
 
-    if (error) {
-      return redirect("/login?message=Could not authenticate user");
+      SetSubmitLoading(false);
+
+      if (error) {
+        console.error("Sign-up error:", error);
+
+        // Check if the error is specifically related to an existing email
+        if (error.message.includes("already registered")) {
+          SetFormResponse(
+            "This email is already registered. Please try logging in."
+          );
+        } else {
+          SetFormResponse(error.message); // Display other error messages
+        }
+
+        return;
+      }
+
+      router.push("/signup?message=Check email to continue sign in process");
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      SetFormResponse("An unexpected error occurred. Please try again.");
+      SetSubmitLoading(false);
     }
-
-    return redirect("/login?message=Check email to continue sign in process");
   };
-  const chance = new Chance();
-  let Name = chance.first();
-  const randNumber = chance.integer({ min: 1, max: 9999 });
-  Name = Name + randNumber;
-  console.log(Name);
+  const GenerateUsername = () => {
+    const chance = new Chance();
+    const Name = chance.first() + chance.integer({ min: 1, max: 9999 });
+    return Name;
+  };
+
+  const HandleEmailChange = (e: any) => {
+    formik.setFieldValue("email", e.target.value);
+  };
+
+  const HandlePasswordChange = (e: any) => {
+    formik.setFieldValue("password", e.target.value);
+  };
+
+  const HandleRepeatedPasswordChange = (e: any) => {
+    formik.setFieldValue("repeatedPassword", e.target.value);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      repeatedPassword: "",
+      terms: false,
+    },
+    validationSchema: SignupSchema,
+    onSubmit: signUp,
+  });
 
   return (
-    <form className="space-y-3 lg:space-y-4">
-        <div className="flex flex-col items-center justify-center gap-2">
-          <Button
-            variant="outline"
-            className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-          >
-            <ChromeIcon className="h-5 w-5 mr-2" />
-            Sign up with Google
-          </Button>
-          <Button
-            variant="outline"
-            className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-          >
-            <GithubIcon className="h-5 w-5 mr-2" />
-            Sign up with GitHub
-          </Button>
+    <form className="space-y-3 lg:space-y-4" onSubmit={formik.handleSubmit}>
+      <div className="flex flex-col items-center justify-center gap-2">
+        <Button
+          variant="outline"
+          className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
+        >
+          <ChromeIcon className="h-5 w-5 mr-2" />
+          Sign up with Google
+        </Button>
+        <Button
+          variant="outline"
+          className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
+        >
+          <GithubIcon className="h-5 w-5 mr-2" />
+          Sign up with GitHub
+        </Button>
+      </div>
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <span className="w-full border-t border-primary" />
         </div>
-        <div className="relative">
-          <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-primary" />
-          </div>
-          <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">Or</span>
-          </div>
+        <div className="relative flex justify-center text-xs uppercase">
+          <span className="bg-card px-2 text-muted-foreground">Or</span>
         </div>
+      </div>
       <div className="space-y-1">
         <Label htmlFor="email">Email</Label>
         <Input
           id="email"
           type="email"
-          required
-          className="transition-all duration-300 focus:ring-2 focus:ring-primary"
+          name="email"
+          onChange={(e) => HandleEmailChange(e)}
+          onBlur={formik.handleBlur}
+          value={formik.values.email}
+          disabled={SubmitLoading}
+          className={`
+            transition-all duration-300 focus:ring-2 focus:ring-primary
+            ${
+              formik.errors.email && formik.touched.email
+                ? "border-red-500"
+                : formik.touched.email
+                ? "border-input"
+                : ""
+            }`}
         />
+        {formik.touched.email && formik.errors.email && (
+          <div className="text-red-500 text-sm">{formik.errors.email}</div>
+        )}
       </div>
       <div className="space-y-1">
         <Label htmlFor="password">Password</Label>
         <Input
           id="password"
           type="password"
-          required
-          className="transition-all duration-300 focus:ring-2 focus:ring-primary"
+          name="password"
+          onChange={(e) => HandlePasswordChange(e)}
+          onBlur={formik.handleBlur}
+          value={formik.values.password}
+          disabled={SubmitLoading}
+          className={`
+            transition-all duration-300 focus:ring-2 focus:ring-primary
+            ${
+              formik.errors.password && formik.touched.password
+                ? "border-red-500"
+                : formik.touched.password
+                ? "border-input"
+                : ""
+            }`}
         />
+        {formik.touched.password && formik.errors.password && (
+          <div className="text-red-500 text-sm">{formik.errors.password}</div>
+        )}
       </div>
       <div className="space-y-1">
         <Label htmlFor="confirm-password">Confirm Password</Label>
         <Input
           id="confirm-password"
           type="password"
-          required
-          className="transition-all duration-300 focus:ring-2 focus:ring-primary"
+          name="repeatedPassword"
+          onChange={(e) => HandleRepeatedPasswordChange(e)}
+          onBlur={formik.handleBlur}
+          value={formik.values.repeatedPassword}
+          disabled={SubmitLoading}
+          className={`
+            transition-all duration-300 focus:ring-2 focus:ring-primary
+            ${
+              formik.errors.repeatedPassword && formik.touched.repeatedPassword
+                ? "border-red-500"
+                : formik.touched.repeatedPassword
+                ? "border-input"
+                : ""
+            }`}
         />
+        {formik.touched.repeatedPassword && formik.errors.repeatedPassword && (
+          <div className="text-red-500 text-sm">
+            {formik.errors.repeatedPassword}
+          </div>
+        )}
       </div>
+      {FormResponse && (
+        <div className="text-red-500 text-center">{FormResponse}</div>
+      )}
       <Button
-          type="submit"
-          className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
-        >
-          Sign up
-        </Button>
+        disabled={SubmitLoading}
+        type="submit"
+        className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
+      >
+        {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Sign up"}
+      </Button>
     </form>
   );
 }
 
-{/* <Link
-        href="/"
-        className="absolute left-8 top-8 py-2 px-4 rounded-md no-underline text-foreground bg-btn-background hover:bg-btn-background-hover flex items-center group text-sm"
-      >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="mr-2 h-4 w-4 transition-transform group-hover:-translate-x-1"
-        >
-          <polyline points="15 18 9 12 15 6" />
-        </svg>{" "}
-        Back
-      </Link> */}
-
-      {/* <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
+{
+  /* <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
         <label className="text-md" htmlFor="email">
           Email
         </label>
@@ -162,4 +246,5 @@ export default function SignUpForm() {
             {searchParams.message}
           </p>
         )}
-      </form> */}
+      </form> */
+}

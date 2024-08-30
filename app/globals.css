@@ -71,4 +71,19 @@
   }
 }
 
+input[type="password"]::-webkit-textfield-decoration-container {
+  display: none;
+}
 
+/* For Firefox */
+input[type="password"]::-moz-textfield-decoration-container {
+  display: none;
+}
+
+/* Fallback for browsers that may not recognize specific pseudo-elements */
+input[type="password"]::-ms-clear,
+input[type="password"]::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}

@@ -9,9 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import {
-  ArrowRight,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import DemoTasks from "@/components/clientcomponents/DemoTasks";
 import logoicon from "@/public/images/motivaily-favicon-color.png";
 import Image from "next/image";
@@ -31,8 +29,14 @@ export default function Index() {
   const router = useRouter();
   const [isDemoVisible, setIsDemoVisible] = React.useState(true);
 
-  const handleLink = (path: string) => {
+  const handleLink = async (path: string) => {
+    // Set the state and wait for the state update to complete
     setIsDemoVisible(false);
+
+    // Add a small delay to ensure the state is updated before routing
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Push the new route
     router.push(path, undefined);
   };
 
@@ -157,7 +161,7 @@ export default function Index() {
         <PricingSection />
         {/* Rating section */}
         <section>
-          <Card className="w-full border-none bg-inherit py-12">
+          <Card className="w-full border-none shadow-none bg-inherit py-12">
             <div className="text-center container px-4 md:px-6">
               <div className="mb-12 inline-block border-2 border-muted rounded-lg px-3 py-1 text-sm">
                 ⭐ Ratings

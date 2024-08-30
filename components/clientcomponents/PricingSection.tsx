@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { Separator } from "../ui/separator";
 
 export default function PricingSection() {
   return (
@@ -23,27 +24,35 @@ export default function PricingSection() {
             <div className="p-6 bg-card">
               <h3 className="text-xl font-bold">Starter</h3>
               <p className="text-muted-foreground mt-2">
-                Ideal for individuals who want to get started with basic features.
+                Ideal for individuals who want to get started with basic
+                features.
               </p>
               <div className="flex items-baseline mt-6">
                 <span className="text-4xl font-bold">Free</span>
               </div>
             </div>
-            <div className="p-6 bg-muted">
-              <ul className="space-y-2 text-muted-foreground">
+            <div className="bg-card pr-6 pl-6">
+            <Separator className="bg-primary" />
+            </div>
+            <div className="p-6 bg-card">
+              <ul className="space-y-2 text-foreground">
                 <li className="flex items-center gap-2">
                   <CheckIcon className="w-5 h-5 text-secondary" />5 active tasks
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Basic task management
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Basic task management
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Email support
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Email support
                 </li>
               </ul>
             </div>
             <div className="p-6 bg-card">
-              <Button className="w-full bg-secondary text-white">Sign Up</Button>
+              <Button className="w-full bg-secondary hover:bg-secondary-hover text-white">
+                Sign Up
+              </Button>
             </div>
           </div>
 
@@ -52,28 +61,37 @@ export default function PricingSection() {
             <div className="p-6 bg-card">
               <h3 className="text-xl font-bold">Paid</h3>
               <p className="text-muted-foreground mt-2">
-                Perfect for individuals and small teams who need more advanced features.
+                Perfect for individuals and small teams who need more advanced
+                features.
               </p>
               <div className="flex items-baseline mt-6">
                 <span className="text-4xl font-bold">$5</span>
                 <span className="text-muted-foreground ml-2">/month</span>
               </div>
             </div>
-            <div className="p-6 bg-muted">
-              <ul className="space-y-2 text-muted-foreground">
+            <div className="bg-card pr-6 pl-6">
+            <Separator className="bg-primary" />
+            </div>
+            <div className="p-6 bg-card">
+              <ul className="space-y-2 text-foreground">
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />50 active tasks
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  50 active tasks
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Priority support
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Priority support
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Advanced features
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Advanced features
                 </li>
               </ul>
             </div>
             <div className="p-6 bg-card">
-              <Button className="w-full bg-secondary text-white">Get Started</Button>
+              <Button className="w-full bg-secondary hover:bg-secondary-hover text-white">
+                Get Started
+              </Button>
             </div>
           </div>
 
@@ -82,28 +100,37 @@ export default function PricingSection() {
             <div className="p-6 bg-card">
               <h3 className="text-xl font-bold">Corporate</h3>
               <p className="text-muted-foreground mt-2">
-                Tailored for large teams and organizations with comprehensive needs.
+                Tailored for large teams and organizations with comprehensive
+                needs.
               </p>
               <div className="flex items-baseline mt-6">
                 <span className="text-4xl font-bold">$29</span>
                 <span className="text-muted-foreground ml-2">/month</span>
               </div>
             </div>
-            <div className="p-6 bg-muted">
-              <ul className="space-y-2 text-muted-foreground">
+            <div className="bg-card pr-6 pl-6">
+            <Separator className="bg-primary" />
+            </div>
+            <div className="p-6 bg-card">
+              <ul className="space-y-2 text-foreground">
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Unlimited active tasks
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Unlimited active tasks
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Dedicated support
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Dedicated support
                 </li>
                 <li className="flex items-center gap-2">
-                  <CheckIcon className="w-5 h-5 text-secondary" />Custom integrations
+                  <CheckIcon className="w-5 h-5 text-secondary" />
+                  Custom integrations
                 </li>
               </ul>
             </div>
             <div className="p-6 bg-card">
-              <Button className="w-full bg-secondary text-white">Contact Us</Button>
+              <Button className="w-full bg-secondary hover:bg-secondary-hover text-white">
+                Contact Us
+              </Button>
             </div>
           </div>
         </div>

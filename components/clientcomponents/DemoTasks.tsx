@@ -57,10 +57,22 @@ export default function DemoTasks({ isDemoVisible }: any) {
   const isMounted = useRef(true);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    if (!isDemoVisible) {
+      mouseControls.stop();
+      return; // Exit early if not visible
+    }
+
     const animateMouse = async () => {
+      // Exit if cancelled
+      if (isCancelled) return;
+
       await mouseControls.start({ x: "20%", y: "30%" });
 
       for (let i = 0; i < todos.length; i++) {
+        if (isCancelled) return; // Stop if cancelled
+
         // Move to the start of the todo item
         await mouseControls.start({ x: `${i - 20}px`, y: `${i * 65 + 120}px` });
 
@@ -79,11 +91,17 @@ export default function DemoTasks({ isDemoVisible }: any) {
 
       // Pause before restarting the animation
       await new Promise((resolve) => setTimeout(resolve, 2000));
-      animateMouse();
+      if (!isCancelled) animateMouse(); // Recursively call if not cancelled
     };
 
     animateMouse();
-  }, [mouseControls]);
+
+    // Cleanup function to set the cancellation flag
+    return () => {
+      isCancelled = true;
+      mouseControls.stop(); // Ensure to stop controls on cleanup
+    };
+  }, [mouseControls, isDemoVisible, todos]); // Add `todos` dependency if it changes
 
   return (
     <Card

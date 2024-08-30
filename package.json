@@ -27,8 +27,10 @@
     "date-fns": "^3.6.0",
     "embla-carousel-autoplay": "^8.2.0",
     "embla-carousel-react": "^8.2.0",
+    "formik": "^2.4.6",
     "framer-motion": "^11.3.29",
     "geist": "^1.2.1",
+    "lodash.debounce": "^4.0.8",
     "lucide-react": "^0.428.0",
     "next": "latest",
     "next-themes": "^0.3.0",
@@ -37,13 +39,16 @@
     "react-day-picker": "^8.10.1",
     "react-dom": "18.2.0",
     "react-icons": "^5.3.0",
+    "react-spinners": "^0.14.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss": "3.4.1",
     "tailwindcss-animate": "^1.0.7",
-    "typescript": "5.3.3"
+    "typescript": "5.3.3",
+    "yup": "^1.4.0"
   },
   "devDependencies": {
     "@types/chance": "^1.1.6",
+    "@types/lodash.debounce": "^4.0.9",
     "@types/node": "20.11.5",
     "@types/react": "18.2.48",
     "@types/react-dom": "18.2.18",
