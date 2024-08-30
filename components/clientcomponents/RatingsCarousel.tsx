@@ -8,7 +8,7 @@ import {
 import { Card } from "@/components/ui/card";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
-import Autoplay from "embla-carousel-autoplay"
+import Autoplay from "embla-carousel-autoplay";
 
 interface Comment {
   name: string;
@@ -73,17 +73,13 @@ export default function RatingsCarousel() {
         plugins={[
           Autoplay({
             delay: 5000,
-            stopOnInteraction:false,
+            stopOnInteraction: false,
           }),
         ]}
-        
       >
         <CarouselContent className="flex gap-4">
           {comments.map((comment, index) => (
-            <CarouselItem
-              key={index}
-              className="snap-center w-[10px] shrink-0"
-            >
+            <CarouselItem key={index} className="snap-center w-[10px] shrink-0">
               <Card className="p-6 flex flex-col gap-4 rounded-lg shadow-lg">
                 <div className="flex flex-col items-center gap-4">
                   <Avatar className="w-48 h-48 border rounded-full overflow-hidden">
@@ -97,13 +93,13 @@ export default function RatingsCarousel() {
                   </Avatar>
 
                   <div className="flex items-center gap-1">
-                    {[...Array(5).keys()].map((i) => (
+                    {Array.from({ length: 5 }, (_, i) => (
                       <StarIcon
                         key={i}
                         className={`stroke-none w-5 h-5 ${
                           i < comment.rating
                             ? "fill-[#FFD700]"
-                            : "fill-muted-foreground "
+                            : "fill-muted-foreground"
                         }`}
                       />
                     ))}

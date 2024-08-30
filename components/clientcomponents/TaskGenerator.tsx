@@ -39,9 +39,17 @@ const randomTasks = [
   "Call or text a friend or family member you haven’t spoken to in a while.",
   "Spend an hour reading a book or article on a topic you’re curious about.",
 ];
+// Define task type
+interface Task {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 export default function TaskGenerator() {
-  const [tasks, setTasks] = useState([]);
+  const [Type, setType] = useState<"simple" | "professional">("simple");
+  const [tasks, setTasks] = useState<Task[]>([]); // Typing tasks as an array of Task
+  const [date, setDate] = useState<Date | undefined>(); // Date can be undefined initially
 
   const generateTask = () => {
     const randomTask = {
@@ -57,7 +65,7 @@ export default function TaskGenerator() {
     setTasks(updatedTasks);
   };
 
-  const toggleTask = (id) => {
+  const toggleTask = (id:number) => {
     setTasks(
       tasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
@@ -65,7 +73,7 @@ export default function TaskGenerator() {
     );
   };
 
-  const removeTask = (id) => {
+  const removeTask = (id:number) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 
@@ -83,7 +91,7 @@ export default function TaskGenerator() {
             viewBox="0 0 24 24"
             data-name="Layer 1"
             id="Layer_1"
-            class="sparkle"
+            className="sparkle"
           >
             <path d="M10,21.236,6.755,14.745.264,11.5,6.755,8.255,10,1.764l3.245,6.491L19.736,11.5l-6.491,3.245ZM18,21l1.5,3L21,21l3-1.5L21,18l-1.5-3L18,18l-3,1.5ZM19.333,4.667,20.5,7l1.167-2.333L24,3.5,21.667,2.333,20.5,0,19.333,2.333,17,3.5Z"></path>
           </svg>

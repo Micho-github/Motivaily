@@ -57,11 +57,17 @@ const randomTasks = [
   "Call or text a friend or family member you haven’t spoken to in a while.",
   "Spend an hour reading a book or article on a topic you’re curious about.",
 ];
+// Define task type
+interface Task {
+  id: number;
+  title: string;
+  completed: boolean;
+}
 
 export default function TaskDemo() {
   const [Type, setType] = useState<"simple" | "professional">("simple");
-  const [tasks, setTasks] = useState([]);
-  const [date, setDate] = useState<Date>();
+  const [tasks, setTasks] = useState<Task[]>([]); // Typing tasks as an array of Task
+  const [date, setDate] = useState<Date | undefined>(); // Date can be undefined initially
 
   const toggleType = () => {
     setType((prev) => (prev === "simple" ? "professional" : "simple"));
@@ -81,7 +87,7 @@ export default function TaskDemo() {
     setTasks(updatedTasks);
   };
 
-  const toggleTask = (id) => {
+  const toggleTask = (id:number) => {
     setTasks(
       tasks.map((task) =>
         task.id === id ? { ...task, completed: !task.completed } : task
@@ -89,7 +95,7 @@ export default function TaskDemo() {
     );
   };
 
-  const removeTask = (id) => {
+  const removeTask = (id:number) => {
     setTasks(tasks.filter((task) => task.id !== id));
   };
 

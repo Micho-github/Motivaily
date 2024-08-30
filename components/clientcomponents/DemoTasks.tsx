@@ -52,7 +52,7 @@ const MouseCursor = ({ controls }: any) => (
 );
 
 export default function DemoTasks({ isDemoVisible }: any) {
-  const [clickedTodo, setClickedTodo] = useState(null);
+  const [clickedTodo, setClickedTodo] = useState<number | null>(null);
   const mouseControls = useAnimation();
   const isMounted = useRef(true);
 
