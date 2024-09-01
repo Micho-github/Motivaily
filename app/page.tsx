@@ -86,7 +86,8 @@ export default function Index() {
                     <Button
                       size="lg"
                       className="gap-2 bg-secondary hover:bg-secondary-hover text-white"
-                      onClick={() => handleLink("/protected")}
+                      onClick={() => handleLink("/mainPage")}
+                      // onClick={() => handleLink("/protected")}
                     >
                       Start App <PlayIcon size={18} />
                     </Button>
