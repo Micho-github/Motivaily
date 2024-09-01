@@ -43,43 +43,55 @@ export default function SignUpForm() {
     const origin = window.location.origin;
 
     try {
-      const { data, error } = await supabase.auth.signUp({
-        email: values.email,
-        password: values.password,
-        options: {
-          data: {
-            name: GenerateUsername(),
+      // Check if email already exists
+      const { data, error: fetchError } = await supabase
+        .from("users")
+        .select("*")
+        .eq("email", values.email);
+
+        if (fetchError) {
+          throw fetchError;
+        }
+        console.log(data);
+      if (data && data.length > 0) {
+        SetFormResponse("Email already exists");
+        SetSubmitLoading(false);
+        return;
+      }
+
+      // Sign up user
+      const { data: signUpData, error: signUpError } =
+        await supabase.auth.signUp({
+          email: values.email,
+          password: values.password,
+          options: {
+            data: { name: GenerateUsername() },
+            emailRedirectTo: `${origin}/auth/callback`,
           },
-          emailRedirectTo: `${origin}/auth/callback`,
-        },
-      });
+        });
 
-      SetSubmitLoading(false);
-
-      if (error) {
-        // Check if the error message indicates the email is already registered
+      if (signUpError) {
+        const errorMessage = signUpError.message.toLowerCase();
         if (
-          error.message.includes("already registered") ||
-          error.message.includes("Email address already in use")
+          errorMessage.includes("already registered") ||
+          errorMessage.includes("email address already in use")
         ) {
           SetFormResponse(
             "This email is already registered. Please try logging in."
           );
         } else {
-          SetFormResponse(error.message); // Handle other error messages
+          SetFormResponse(signUpError.message);
         }
-        return;
+        console.error(signUpError);
+      } else {
+        SetFormResponse("Check your email to complete the sign-up process.");
+        SetSuccess(true);
+        formik.resetForm();
       }
-      console.error(error);
-      console.log(data);
-      formik.resetForm();
-      SetSuccess(true);
-      SetFormResponse("Check your email to complete the sign-up process.");
-
-      router.push("/mainPage");
     } catch (err) {
-      console.error("Unexpected error:", err);
       SetFormResponse("An unexpected error occurred. Please try again.");
+      console.error("Unexpected error:", err);
+    } finally {
       SetSubmitLoading(false);
     }
   };
