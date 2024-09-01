@@ -1,3 +1,4 @@
+"use client"
 import Image from "next/image";
 import logo from "@/public/images/logo-no-background.png";
 import LoginForm from "@/components/Forms/LoginForm";
@@ -5,12 +6,28 @@ import RegisterPoster from "@/components/posters/RegisterPoster";
 import Link from "next/link";
 import { AiFillHome } from "react-icons/ai";
 import { Button } from "@/components/ui/button";
+import { createClient } from "@/utils/supabase/client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login({
   searchParams,
 }: {
   searchParams: { message: string };
 }) {
+  const router =useRouter();
+  const supabase = createClient();
+  useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        router.push("/");
+      }
+    };
+    checkUser();
+  }, [supabase, router]);
+
+
   return (
     <div className="text-foreground w-full min-h-screen ">
       <div className="grid  w-full h-screen lg:grid-cols-[1fr_3fr] ">

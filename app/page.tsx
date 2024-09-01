@@ -9,7 +9,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, PlayIcon } from "lucide-react";
 import DemoTasks from "@/components/clientcomponents/DemoTasks";
 import logoicon from "@/public/images/motivaily-favicon-color.png";
 import Image from "next/image";
@@ -24,25 +24,36 @@ import { Separator } from "@/components/ui/separator";
 import PricingSection from "@/components/clientcomponents/PricingSection";
 import { NavMenu } from "@/components/clientcomponents/NavMenu";
 import TaskDemo from "@/components/clientcomponents/TaskDemo";
+import { createClient } from "@/utils/supabase/client";
 
 export default function Index() {
   const router = useRouter();
+  const supabase = createClient();
   const [isDemoVisible, setIsDemoVisible] = React.useState(true);
+  const [User, SetUser] = React.useState<boolean>(false);
 
   const handleLink = async (path: string) => {
-    // Set the state and wait for the state update to complete
     setIsDemoVisible(false);
-
-    // Add a small delay to ensure the state is updated before routing
     await new Promise((resolve) => setTimeout(resolve, 500));
-
-    // Push the new route
     router.push(path, undefined);
   };
 
   React.useEffect(() => {
     setIsDemoVisible(true);
   }, []);
+
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (user) {
+        SetUser(true);
+      }
+    };
+    checkUser();
+  }, [supabase, router]);
+
   return (
     <div className="scroll-smooth w-auto flex flex-col min-h-[100dvh]">
       <LandingHeader>
@@ -71,17 +82,29 @@ export default function Index() {
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Button
-                    size="lg"
-                    className="bg-secondary hover:bg-secondary-hover text-white"
-                    onClick={() => handleLink("/login")}
-                  >
-                    Start for Free
-                    <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
-                  <Button size="lg" variant="outline">
-                    Live Demo
-                  </Button>
+                  {User ? (
+                    <Button
+                      size="lg"
+                      className="gap-2 bg-secondary hover:bg-secondary-hover text-white"
+                      onClick={() => handleLink("/protected")}
+                    >
+                      Start App <PlayIcon size={18} />
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="lg"
+                        className="bg-secondary hover:bg-secondary-hover text-white"
+                        onClick={() => handleLink("/login")}
+                      >
+                        Start for Free
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                      <Button size="lg" variant="outline">
+                        Live Demo
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
               <DemoTasks isDemoVisible={isDemoVisible} />

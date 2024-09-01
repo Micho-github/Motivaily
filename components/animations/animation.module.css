@@ -9,3 +9,21 @@
   }
 }
 
+.glow_scale {
+  animation: scaleGlow 3s ease-in-out forwards;
+}
+
+@keyframes scaleGlow {
+  0% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(70, 208, 20, 0));
+  }
+  50% {
+    transform: scale(1.1);
+    filter: drop-shadow(0 0 15px rgba(70, 208, 20, 0.7));
+  }
+  100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(70, 208, 20, 0));
+  }
+}

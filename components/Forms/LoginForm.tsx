@@ -23,11 +23,11 @@ export default function LoginForm() {
   const router = useRouter();
   const supabase = createClient();
 
-  const signInWithOAuth = async(provider:any)=>{
+  const signInWithOAuth = async (provider: any) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: provider,
-    })
-  }
+    });
+  };
 
   const signIn = async (values: Values) => {
     SetFormResponse("");
@@ -68,12 +68,12 @@ export default function LoginForm() {
   });
 
   return (
-    <div className="space-y-3 lg:space-y-4" >
+    <div className="space-y-3 lg:space-y-4">
       <div className="flex flex-col items-center justify-center gap-2">
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-        onClick={()=>signInWithOAuth("google")}
+          onClick={() => signInWithOAuth("google")}
         >
           <ChromeIcon className="h-5 w-5 mr-2" />
           Login with Google
@@ -81,7 +81,7 @@ export default function LoginForm() {
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-          onClick={()=>signInWithOAuth("github")}
+          onClick={() => signInWithOAuth("github")}
         >
           <GithubIcon className="h-5 w-5 mr-2" />
           Login with GitHub
@@ -95,18 +95,18 @@ export default function LoginForm() {
           <span className="bg-card px-2 text-muted-foreground">Or</span>
         </div>
       </div>
-      <form onSubmit={formik.handleSubmit}>
-      <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          name="email"
-          onChange={(e) => HandleEmailChange(e)}
-          onBlur={formik.handleBlur}
-          value={formik.values.email}
-          disabled={SubmitLoading}
-          className={`
+      <form className="space-y-3 lg:space-y-4" onSubmit={formik.handleSubmit}>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            onChange={(e) => HandleEmailChange(e)}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+            disabled={SubmitLoading}
+            className={`
             transition-all duration-300 focus:ring-2 focus:ring-primary
             ${
               formik.errors.email && formik.touched.email
@@ -115,31 +115,31 @@ export default function LoginForm() {
                 ? "border-input"
                 : ""
             }`}
-        />
-        {formik.touched.email && formik.errors.email && (
-          <div className="text-red-500 text-sm">{formik.errors.email}</div>
-        )}
-      </div>
-      <div className="space-y-2 relative">
-        <div className="flex items-center justify-between">
-          <Label htmlFor="password">Password</Label>
-          <Link
-            href="#"
-            className="inline-block text-sm text-primary transition-colors duration-300 hover:text-secondary"
-            prefetch={false}
-          >
-            Forgot your password?
-          </Link>
+          />
+          {formik.touched.email && formik.errors.email && (
+            <div className="text-red-500 text-sm">{formik.errors.email}</div>
+          )}
         </div>
-        <Input
-          id="password"
-          type={showPassword ? "text" : "password"}
-          name="password"
-          onChange={HandlePasswordChange}
-          onBlur={formik.handleBlur}
-          value={formik.values.password}
-          disabled={SubmitLoading}
-          className={`
+        <div className="space-y-2 relative">
+          <div className="flex items-center justify-between">
+            <Label htmlFor="password">Password</Label>
+            <Link
+              href="#"
+              className="inline-block text-sm text-primary transition-colors duration-300 hover:text-secondary"
+              prefetch={false}
+            >
+              Forgot your password?
+            </Link>
+          </div>
+          <Input
+            id="password"
+            type={showPassword ? "text" : "password"}
+            name="password"
+            onChange={HandlePasswordChange}
+            onBlur={formik.handleBlur}
+            value={formik.values.password}
+            disabled={SubmitLoading}
+            className={`
     transition-all duration-300 focus:ring-2 focus:ring-primary
     ${
       formik.errors.password && formik.touched.password
@@ -148,28 +148,32 @@ export default function LoginForm() {
         ? "border-input"
         : ""
     }`}
-        />
-        <div
-          role="button"
-          className="absolute right-2 top-7"
-          onClick={togglePasswordVisibility}
-        >
-          {showPassword ? <BiSolidHide size={25} /> : <BiSolidShow size={25} />}
+          />
+          <div
+            role="button"
+            className="absolute right-2 top-7"
+            onClick={togglePasswordVisibility}
+          >
+            {showPassword ? (
+              <BiSolidHide size={25} />
+            ) : (
+              <BiSolidShow size={25} />
+            )}
+          </div>
+          {formik.touched.password && formik.errors.password && (
+            <div className="text-red-500 text-sm">{formik.errors.password}</div>
+          )}
         </div>
-        {formik.touched.password && formik.errors.password && (
-          <div className="text-red-500 text-sm">{formik.errors.password}</div>
+        {FormResponse && (
+          <div className="text-red-500 text-center">{FormResponse}</div>
         )}
-      </div>
-      {FormResponse && (
-        <div className="text-red-500 text-center">{FormResponse}</div>
-      )}
-      <Button
-        disabled={SubmitLoading}
-        type="submit"
-        className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
-      >
-        {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Login"}
-      </Button>
+        <Button
+          disabled={SubmitLoading}
+          type="submit"
+          className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
+        >
+          {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Login"}
+        </Button>
       </form>
     </div>
   );

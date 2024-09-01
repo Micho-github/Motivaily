@@ -21,14 +21,29 @@ export default function SignUpForm() {
   const [SubmitLoading, SetSubmitLoading] = React.useState(false);
   const [FormResponse, SetFormResponse] = React.useState("");
   const router = useRouter();
+  const supabase = createClient();
+  const [Success,SetSuccess] = React.useState(false);
+
+  const signInWithOAuth = async (provider: any) => {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: provider,
+      options: { redirectTo: `${window.location.origin}/auth/callback` }
+    });
+    
+    if (error) {
+      console.error("OAuth sign-in error:", error);
+      alert("Failed to sign in with OAuth. Please try again.");
+    }
+  };
 
   const signUp = async (values: Values) => {
+    SetSuccess(false);
+    SetFormResponse("");
     SetSubmitLoading(true);
     const origin = window.location.origin;
-    const supabase = createClient();
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { data,error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -42,43 +57,32 @@ export default function SignUpForm() {
       SetSubmitLoading(false);
 
       if (error) {
-        console.error("Sign-up error:", error);
-
-        // Check if the error is specifically related to an existing email
-        if (error.message.includes("already registered")) {
+        // Check if the error message indicates the email is already registered
+        if (error.message.includes("already registered") || error.message.includes("Email address already in use")) {
           SetFormResponse(
             "This email is already registered. Please try logging in."
           );
         } else {
-          SetFormResponse(error.message); // Display other error messages
+          SetFormResponse(error.message); // Handle other error messages
         }
-
         return;
       }
-
-      router.push("/signup?message=Check email to continue sign in process");
+      console.error(error)
+      console.log(data)
+      formik.resetForm();
+      SetSuccess(true);
+      SetFormResponse("Check your email to complete the sign-up process.");
     } catch (err) {
       console.error("Unexpected error:", err);
       SetFormResponse("An unexpected error occurred. Please try again.");
       SetSubmitLoading(false);
     }
   };
+
   const GenerateUsername = () => {
     const chance = new Chance();
     const Name = chance.first() + chance.integer({ min: 1, max: 9999 });
     return Name;
-  };
-
-  const HandleEmailChange = (e: any) => {
-    formik.setFieldValue("email", e.target.value);
-  };
-
-  const HandlePasswordChange = (e: any) => {
-    formik.setFieldValue("password", e.target.value);
-  };
-
-  const HandleRepeatedPasswordChange = (e: any) => {
-    formik.setFieldValue("repeatedPassword", e.target.value);
   };
 
   const formik = useFormik({
@@ -92,12 +96,26 @@ export default function SignUpForm() {
     onSubmit: signUp,
   });
 
+
+  const HandleEmailChange = (e: any) => {
+    formik.setFieldValue("email", e.target.value);
+  };
+
+  const HandlePasswordChange = (e: any) => {
+    formik.setFieldValue("password", e.target.value);
+  };
+
+  const HandleRepeatedPasswordChange = (e: any) => {
+    formik.setFieldValue("repeatedPassword", e.target.value);
+  };
+
   return (
-    <form className="space-y-3 lg:space-y-4" onSubmit={formik.handleSubmit}>
+    <div className="space-y-3 lg:space-y-4">
       <div className="flex flex-col items-center justify-center gap-2">
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
+          onClick={()=>signInWithOAuth("google")}
         >
           <ChromeIcon className="h-5 w-5 mr-2" />
           Sign up with Google
@@ -105,6 +123,7 @@ export default function SignUpForm() {
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
+          onClick={()=>signInWithOAuth("github")}
         >
           <GithubIcon className="h-5 w-5 mr-2" />
           Sign up with GitHub
@@ -118,6 +137,7 @@ export default function SignUpForm() {
           <span className="bg-card px-2 text-muted-foreground">Or</span>
         </div>
       </div>
+      <form className="space-y-3 lg:space-y-4"  onSubmit={formik.handleSubmit}>
       <div className="space-y-1">
         <Label htmlFor="email">Email</Label>
         <Input
@@ -193,7 +213,7 @@ export default function SignUpForm() {
         )}
       </div>
       {FormResponse && (
-        <div className="text-red-500 text-center">{FormResponse}</div>
+      <div className={`text-center ${Success ? " text-green-500": "text-red-500"}`}>{FormResponse}</div>
       )}
       <Button
         disabled={SubmitLoading}
@@ -202,49 +222,7 @@ export default function SignUpForm() {
       >
         {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Sign up"}
       </Button>
-    </form>
+      </form>
+    </div>
   );
-}
-
-{
-  /* <form className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground">
-        <label className="text-md" htmlFor="email">
-          Email
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          name="email"
-          placeholder="you@example.com"
-          required
-        />
-        <label className="text-md" htmlFor="password">
-          Password
-        </label>
-        <input
-          className="rounded-md px-4 py-2 bg-inherit border mb-6"
-          type="password"
-          name="password"
-          placeholder="••••••••"
-          required
-        />
-        <SubmitButton
-          formAction={signIn}
-          className="bg-green-700 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing In..."
-        >
-          Sign In
-        </SubmitButton>
-        <SubmitButton
-          formAction={signUp}
-          className="border border-foreground/20 rounded-md px-4 py-2 text-foreground mb-2"
-          pendingText="Signing Up..."
-        >
-          Sign Up
-        </SubmitButton>
-        {searchParams?.message && (
-          <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-            {searchParams.message}
-          </p>
-        )}
-      </form> */
 }
