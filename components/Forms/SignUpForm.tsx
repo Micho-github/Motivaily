@@ -22,14 +22,14 @@ export default function SignUpForm() {
   const [FormResponse, SetFormResponse] = React.useState("");
   const router = useRouter();
   const supabase = createClient();
-  const [Success,SetSuccess] = React.useState(false);
+  const [Success, SetSuccess] = React.useState(false);
 
   const signInWithOAuth = async (provider: any) => {
     const { data, error } = await supabase.auth.signInWithOAuth({
       provider: provider,
-      options: { redirectTo: `${window.location.origin}/auth/callback` }
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
-    
+
     if (error) {
       console.error("OAuth sign-in error:", error);
       alert("Failed to sign in with OAuth. Please try again.");
@@ -43,7 +43,7 @@ export default function SignUpForm() {
     const origin = window.location.origin;
 
     try {
-      const { data,error } = await supabase.auth.signUp({
+      const { data, error } = await supabase.auth.signUp({
         email: values.email,
         password: values.password,
         options: {
@@ -58,7 +58,10 @@ export default function SignUpForm() {
 
       if (error) {
         // Check if the error message indicates the email is already registered
-        if (error.message.includes("already registered") || error.message.includes("Email address already in use")) {
+        if (
+          error.message.includes("already registered") ||
+          error.message.includes("Email address already in use")
+        ) {
           SetFormResponse(
             "This email is already registered. Please try logging in."
           );
@@ -67,11 +70,13 @@ export default function SignUpForm() {
         }
         return;
       }
-      console.error(error)
-      console.log(data)
+      console.error(error);
+      console.log(data);
       formik.resetForm();
       SetSuccess(true);
       SetFormResponse("Check your email to complete the sign-up process.");
+
+      router.push("/mainPage");
     } catch (err) {
       console.error("Unexpected error:", err);
       SetFormResponse("An unexpected error occurred. Please try again.");
@@ -96,7 +101,6 @@ export default function SignUpForm() {
     onSubmit: signUp,
   });
 
-
   const HandleEmailChange = (e: any) => {
     formik.setFieldValue("email", e.target.value);
   };
@@ -115,7 +119,7 @@ export default function SignUpForm() {
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-          onClick={()=>signInWithOAuth("google")}
+          onClick={() => signInWithOAuth("google")}
         >
           <ChromeIcon className="h-5 w-5 mr-2" />
           Sign up with Google
@@ -123,7 +127,7 @@ export default function SignUpForm() {
         <Button
           variant="outline"
           className="w-full transition-all duration-300 hover:bg-accent hover:text-accent-foreground"
-          onClick={()=>signInWithOAuth("github")}
+          onClick={() => signInWithOAuth("github")}
         >
           <GithubIcon className="h-5 w-5 mr-2" />
           Sign up with GitHub
@@ -137,18 +141,18 @@ export default function SignUpForm() {
           <span className="bg-card px-2 text-muted-foreground">Or</span>
         </div>
       </div>
-      <form className="space-y-3 lg:space-y-4"  onSubmit={formik.handleSubmit}>
-      <div className="space-y-1">
-        <Label htmlFor="email">Email</Label>
-        <Input
-          id="email"
-          type="email"
-          name="email"
-          onChange={(e) => HandleEmailChange(e)}
-          onBlur={formik.handleBlur}
-          value={formik.values.email}
-          disabled={SubmitLoading}
-          className={`
+      <form className="space-y-3 lg:space-y-4" onSubmit={formik.handleSubmit}>
+        <div className="space-y-1">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            name="email"
+            onChange={(e) => HandleEmailChange(e)}
+            onBlur={formik.handleBlur}
+            value={formik.values.email}
+            disabled={SubmitLoading}
+            className={`
             transition-all duration-300 focus:ring-2 focus:ring-primary
             ${
               formik.errors.email && formik.touched.email
@@ -157,22 +161,22 @@ export default function SignUpForm() {
                 ? "border-input"
                 : ""
             }`}
-        />
-        {formik.touched.email && formik.errors.email && (
-          <div className="text-red-500 text-sm">{formik.errors.email}</div>
-        )}
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="password">Password</Label>
-        <Input
-          id="password"
-          type="password"
-          name="password"
-          onChange={(e) => HandlePasswordChange(e)}
-          onBlur={formik.handleBlur}
-          value={formik.values.password}
-          disabled={SubmitLoading}
-          className={`
+          />
+          {formik.touched.email && formik.errors.email && (
+            <div className="text-red-500 text-sm">{formik.errors.email}</div>
+          )}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="password">Password</Label>
+          <Input
+            id="password"
+            type="password"
+            name="password"
+            onChange={(e) => HandlePasswordChange(e)}
+            onBlur={formik.handleBlur}
+            value={formik.values.password}
+            disabled={SubmitLoading}
+            className={`
             transition-all duration-300 focus:ring-2 focus:ring-primary
             ${
               formik.errors.password && formik.touched.password
@@ -181,22 +185,22 @@ export default function SignUpForm() {
                 ? "border-input"
                 : ""
             }`}
-        />
-        {formik.touched.password && formik.errors.password && (
-          <div className="text-red-500 text-sm">{formik.errors.password}</div>
-        )}
-      </div>
-      <div className="space-y-1">
-        <Label htmlFor="confirm-password">Confirm Password</Label>
-        <Input
-          id="confirm-password"
-          type="password"
-          name="repeatedPassword"
-          onChange={(e) => HandleRepeatedPasswordChange(e)}
-          onBlur={formik.handleBlur}
-          value={formik.values.repeatedPassword}
-          disabled={SubmitLoading}
-          className={`
+          />
+          {formik.touched.password && formik.errors.password && (
+            <div className="text-red-500 text-sm">{formik.errors.password}</div>
+          )}
+        </div>
+        <div className="space-y-1">
+          <Label htmlFor="confirm-password">Confirm Password</Label>
+          <Input
+            id="confirm-password"
+            type="password"
+            name="repeatedPassword"
+            onChange={(e) => HandleRepeatedPasswordChange(e)}
+            onBlur={formik.handleBlur}
+            value={formik.values.repeatedPassword}
+            disabled={SubmitLoading}
+            className={`
             transition-all duration-300 focus:ring-2 focus:ring-primary
             ${
               formik.errors.repeatedPassword && formik.touched.repeatedPassword
@@ -205,23 +209,30 @@ export default function SignUpForm() {
                 ? "border-input"
                 : ""
             }`}
-        />
-        {formik.touched.repeatedPassword && formik.errors.repeatedPassword && (
-          <div className="text-red-500 text-sm">
-            {formik.errors.repeatedPassword}
+          />
+          {formik.touched.repeatedPassword &&
+            formik.errors.repeatedPassword && (
+              <div className="text-red-500 text-sm">
+                {formik.errors.repeatedPassword}
+              </div>
+            )}
+        </div>
+        {FormResponse && (
+          <div
+            className={`text-center ${
+              Success ? " text-green-500" : "text-red-500"
+            }`}
+          >
+            {FormResponse}
           </div>
         )}
-      </div>
-      {FormResponse && (
-      <div className={`text-center ${Success ? " text-green-500": "text-red-500"}`}>{FormResponse}</div>
-      )}
-      <Button
-        disabled={SubmitLoading}
-        type="submit"
-        className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
-      >
-        {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Sign up"}
-      </Button>
+        <Button
+          disabled={SubmitLoading}
+          type="submit"
+          className="w-full  bg-secondary text-white hover:bg-secondary-hover focus:ring-green-600"
+        >
+          {SubmitLoading ? <ClipLoader color="white" size={20} /> : "Sign up"}
+        </Button>
       </form>
     </div>
   );

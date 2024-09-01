@@ -45,7 +45,8 @@ export default function LoginForm() {
       return router.push("/login?message=Could not authenticate user");
     }
 
-    return router.push("/protected");
+    return router.push("/mainPage");
+    // return router.push("/protected");
   };
 
   const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
