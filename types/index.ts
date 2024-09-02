@@ -1,3 +1,5 @@
+import { UUID } from "crypto";
+
 export interface Task {
   id: number;
   title: string;
@@ -15,4 +17,14 @@ export interface TodoList {
   dueDate: string | null;
   hidden: boolean;
   tasks: Task[];
+}
+
+export interface users {
+  uid: UUID;
+  username: string;
+  email: string;
+  provider: "email" | "google" | "github";
+  isactive: boolean;
+  avatar_url: any;
+  created_at: Date;
 }
