@@ -26,7 +26,7 @@ import { NavMenu } from "@/components/clientcomponents/NavMenu";
 import TaskDemo from "@/components/clientcomponents/TaskDemo";
 import { createClient } from "@/utils/supabase/client";
 
-export default function Index() {
+export default function HomePage() {
   const router = useRouter();
   const supabase = createClient();
   const [isDemoVisible, setIsDemoVisible] = React.useState(true);
@@ -86,7 +86,7 @@ export default function Index() {
                     <Button
                       size="lg"
                       className="gap-2 bg-secondary hover:bg-secondary-hover text-white"
-                      onClick={() => handleLink("/mainPage")}
+                      onClick={() => handleLink("/dashboard")}
                       // onClick={() => handleLink("/protected")}
                     >
                       Start App <PlayIcon size={18} />
@@ -96,7 +96,7 @@ export default function Index() {
                       <Button
                         size="lg"
                         className="bg-secondary hover:bg-secondary-hover text-white"
-                        onClick={() => handleLink("/login")}
+                        onClick={() => handleLink("/auth/login")}
                       >
                         Start for Free
                         <ArrowRight className="ml-2 h-4 w-4" />

@@ -36,15 +36,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
       <div className="flex h-14 items-center px-4 sm:px-6 justify-between w-full">
-        <div className="flex items-center">
-          <Image
-            src="/images/motivaily-favicon-color.png"
-            width={30}
-            height={30}
-            alt="Motivaily logo"
-          />
-          <span className="ml-2 text-lg font-bold">Motivaily</span>
-        </div>
+        <div />
         <div className="flex items-center space-x-2">
           <span className="text-sm font-medium">John</span>
           <DropdownMenu>

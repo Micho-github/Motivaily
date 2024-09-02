@@ -50,7 +50,7 @@ export default function Login({
               <h1 className="text-3xl font-bold ">Login</h1>
               <p className="text-muted-foreground">
                 Don't have an account?&nbsp;
-                <Link href="/signup">
+                <Link href="/auth/signup">
                   <button
                     type="button"
                     className="font-medium underline underline-offset-4 text-primary transition-colors duration-300 hover:text-secondary"

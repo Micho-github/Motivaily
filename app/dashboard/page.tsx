@@ -14,8 +14,25 @@ import ConfirmDialog from "@/components/mainPageComponents/ConfirmDialog";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { cn } from "@/lib/utils";
+import { useRouter } from "next/navigation";
+import { createClient } from "@/utils/supabase/client";
 
-export default function MainPage() {
+export default function Index() {
+  const [user,SetUser]=React.useState<Boolean>(false);
+  const router =useRouter();
+  const supabase = createClient();
+  React.useEffect(() => {
+    const checkUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        return router.push("/home");
+      }
+      SetUser(true);
+    };
+    checkUser();
+  }, [supabase, router]);
+
+
   const [lists, setLists] = useState<TodoListType[]>([]);
   const [completedLists, setCompletedLists] = useState<number[]>([]);
   const [showCelebration, setShowCelebration] = useState(false);
@@ -254,9 +271,9 @@ export default function MainPage() {
     return result;
   }, [lists, showHidden, filters]);
 
-  return (
+   if (user) return (
     <div className="flex flex-col min-h-screen bg-background w-full">
-      <Header />
+      {/* <Header /> */}
       <main className="flex-1 py-6 px-2 sm:px-4 md:px-6 w-full">
         {showCelebration && <Celebration />}
         <ConfirmDialog
@@ -355,7 +372,7 @@ export default function MainPage() {
           ))}
         </div>
       </main>
-      <Footer />
+      {/* <Footer /> */}
       <FilterModal
         isOpen={showFilterModal}
         onClose={() => setShowFilterModal(false)}

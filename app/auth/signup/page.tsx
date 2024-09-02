@@ -46,7 +46,7 @@ export default async function SignUp({
               <h1 className="text-3xl font-bold ">Create an account</h1>
               <p className="text-muted-foreground">
                 Already have an account?&nbsp;
-                <Link href="/login">
+                <Link href="/auth/login">
                   <button
                     type="button"
                     className="font-medium underline underline-offset-4 text-primary transition-colors duration-300 hover:text-secondary"
