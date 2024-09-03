@@ -70,7 +70,7 @@ export default function CompactGridLayout({
   }>({});
   const [userInfo, setUserInfo] = useState<users>();
   const [error, setError] = useState<string>("");
-  const [avatarUrl, setAvatarUrl] = useState();
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
   const [language, setLanguage] = useState("english");
   const { theme, setTheme } = useTheme();
