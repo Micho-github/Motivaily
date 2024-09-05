@@ -20,10 +20,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { PlusCircle } from "lucide-react";
-import { TodoList } from "@/types";
+import { lists } from "@/types";
 
 interface AddListDialogProps {
-  onAddList: (list: Omit<TodoList, "id" | "tasks">) => void;
+  onAddList: (list: Omit<lists, "id" | "tasks">) => void;
 }
 
 export default function AddListDialog({ onAddList }: AddListDialogProps) {
@@ -44,6 +44,8 @@ export default function AddListDialog({ onAddList }: AddListDialogProps) {
         priority,
         dueDate: hasDueDate ? dueDate : null,
         hidden: false,
+        userid: "",
+        position: 0,
       });
       setTitle("");
       setDescription("");

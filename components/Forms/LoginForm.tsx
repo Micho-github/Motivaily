@@ -45,7 +45,7 @@ export default function LoginForm() {
       return router.push("/login?message=Could not authenticate user");
     }
 
-    return router.push("/mainPage");
+    return router.push("/dashboard");
     // return router.push("/protected");
   };
 

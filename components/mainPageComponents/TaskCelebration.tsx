@@ -28,7 +28,7 @@ const encouragingEmojis = [
 ];
 
 interface TaskCelebrationProps {
-  listId: number;
+  listId: string;
 }
 
 export default function TaskCelebration({ listId }: TaskCelebrationProps) {

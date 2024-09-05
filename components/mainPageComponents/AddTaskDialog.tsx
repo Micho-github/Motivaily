@@ -38,7 +38,19 @@ export default function AddTaskDialog({
 
   const handleSubmit = () => {
     if (title.trim()) {
-      onAddTask(title.trim(), description.trim(), hasDueDate ? dueDate : null);
+      const formattedDueDate = hasDueDate ? dueDate : null;
+
+      // Ensure dueDate is not later than the list's dueDate
+      if (
+        formattedDueDate &&
+        new Date(formattedDueDate) > new Date(listDueDate)
+      ) {
+        alert("Due date cannot be later than the list's due date.");
+        return;
+      }
+
+      // Ensure formattedDueDate is in the expected format if needed
+      onAddTask(title.trim(), description.trim(), formattedDueDate);
       setTitle("");
       setDescription("");
       setDueDate("");

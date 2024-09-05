@@ -13,7 +13,7 @@ interface InfoDialogProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
-  description: string;
+  description: string | null;
   dueDate: string | null;
   onUpdateDueDate: (newDueDate: string | null) => void;
 }
@@ -31,7 +31,9 @@ export default function InfoDialog({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogDescription>
+            {description || "No description available"}
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-4 items-center gap-4">

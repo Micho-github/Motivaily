@@ -475,8 +475,8 @@ export default function CompactGridLayout({
       <main className="p-6 overflow-auto">{children}</main>
 
       {/* Footer */}
-      <footer className="bg-card text-card-foreground p-4 text-center col-span-full">
-        © 2023 My App. All rights reserved.
+      <footer className="bg-card text-card-foreground p-4 text-sm text-center col-span-full">
+        © 2023 Motivaily. All rights reserved.
       </footer>
     </div>
   );

@@ -6,33 +6,34 @@ import {
   ChevronUp,
   ChevronDown,
   Info,
-  // Eye,
-  // EyeOff,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import TaskItem from "./TaskItem";
 import AddTaskDialog from "./AddTaskDialog";
 import InfoDialog from "./InfoDialog";
 import TaskCelebration from "./TaskCelebration";
-import { TodoList as TodoListType, Task } from "@/types";
+import { lists, tasks } from "@/types";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import DueDateWarning from "./DueDateWarning";
+import { createClient } from "@/utils/supabase/client";
 
 interface TodoListProps {
-  list: TodoListType;
-  onDelete: (id: number) => void;
-  onUpdate: (list: TodoListType) => void;
-  onMove: (id: number, direction: "up" | "down") => void;
+  list: lists;
+  onDelete: (id: string) => void;
+  onUpdate: (list: lists) => void;
+  onMove: (id: string, direction: "up" | "down") => void;
   onAddTask: (
-    listId: number,
+    listId: string,
     title: string,
     description: string,
     dueDate: string | null
   ) => void;
-  onToggleTask: (listId: number, taskId: number) => void;
-  onDeleteTask: (listId: number, taskId: number) => void;
-  onToggleListVisibility: (listId: number) => void;
-  onToggleTaskVisibility: (listId: number, taskId: number) => void;
+  onToggleTask: (listId: string, taskId: string) => void;
+  onDeleteTask: (listId: string, taskId: string) => void;
+  onToggleListVisibility: (listId: string) => void;
+  onToggleTaskVisibility: (listId: string, taskId: string) => void;
   isFirst: boolean;
   isLast: boolean;
   showHidden: boolean;
@@ -46,23 +47,25 @@ export default function TodoList({
   onAddTask,
   onToggleTask,
   onDeleteTask,
-  // onToggleListVisibility,
+  onToggleListVisibility,
   onToggleTaskVisibility,
   isFirst,
   isLast,
   showHidden,
 }: TodoListProps) {
+  const supabase = createClient();
+
   const [hideCompletedTasks, setHideCompletedTasks] = useState(false);
   const [showAddTaskDialog, setShowAddTaskDialog] = useState(false);
   const [showInfoDialog, setShowInfoDialog] = useState(false);
   const [showCelebration, setShowCelebration] = useState(false);
   const { toast } = useToast();
 
-  const visibleTasks = list.tasks.filter(
+  const visibleTasks = (list.tasks || []).filter(
     (task) => !hideCompletedTasks || (!task.completed && !task.hidden)
   );
 
-  const handleUpdateListDueDate = (newDueDate: string | null) => {
+  const handleUpdateListDueDate = async (newDueDate: string | null) => {
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -81,10 +84,23 @@ export default function TodoList({
       }
     }
 
-    onUpdate({ ...list, dueDate: newDueDate });
+    const { error } = await supabase
+      .from("lists")
+      .update({ dueDate: newDueDate })
+      .eq("id", list.id);
+
+    if (error) {
+      toast({
+        title: "Update Failed",
+        description: error.message,
+        variant: "destructive",
+      });
+    } else {
+      onUpdate({ ...list, dueDate: newDueDate });
+    }
   };
 
-  const handleMoveTask = (taskId: number, direction: "up" | "down") => {
+  const handleMoveTask = async (taskId: string, direction: "up" | "down") => {
     const taskIndex = list.tasks.findIndex((task) => task.id === taskId);
     if (
       (direction === "up" && taskIndex > 0) ||
@@ -94,12 +110,30 @@ export default function TodoList({
       const temp = newTasks[taskIndex];
       newTasks[taskIndex] = newTasks[taskIndex + (direction === "up" ? -1 : 1)];
       newTasks[taskIndex + (direction === "up" ? -1 : 1)] = temp;
-      onUpdate({ ...list, tasks: newTasks });
+
+      const { error } = await supabase.from("tasks").upsert(
+        newTasks.map((task) => ({
+          id: task.id,
+          listID: task.listID,
+          position: task.position,
+        }))
+      );
+
+      if (error) {
+        toast({
+          title: "Update Failed",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        onUpdate({ ...list, tasks: newTasks });
+      }
     }
   };
 
-  const handleToggleTask = (taskId: number) => {
-    onToggleTask(list.id, taskId);
+  const handleToggleTask = async (taskId: string) => {
+    // Updated to async
+    await onToggleTask(list.id, taskId);
     const task = list.tasks.find((t) => t.id === taskId);
     if (task && !task.completed) {
       setShowCelebration(true);
@@ -149,7 +183,23 @@ export default function TodoList({
               )}
             </Button> */}
             <Button
-              onClick={() => onDelete(list.id)}
+              onClick={async () => {
+                // Updated to async
+                const { error } = await supabase
+                  .from("lists")
+                  .delete()
+                  .eq("id", list.id);
+
+                if (error) {
+                  toast({
+                    title: "Delete Failed",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                } else {
+                  onDelete(list.id);
+                }
+              }}
               className="text-destructive hover:text-destructive-foreground bg-transparent hover:bg-destructive"
             >
               <Trash2 className="h-4 w-4" />
@@ -185,12 +235,29 @@ export default function TodoList({
               key={task.id}
               task={task}
               onToggle={() => handleToggleTask(task.id)}
-              onDelete={() => onDeleteTask(list.id, task.id)}
+              onDelete={async () => {
+                // Updated to async
+                const { error } = await supabase
+                  .from("tasks")
+                  .delete()
+                  .eq("id", task.id)
+                  .eq("listID", list.id);
+
+                if (error) {
+                  toast({
+                    title: "Delete Failed",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                } else {
+                  onDeleteTask(list.id, task.id);
+                }
+              }}
               onToggleVisibility={() =>
                 onToggleTaskVisibility(list.id, task.id)
               }
               onMove={(direction) => handleMoveTask(task.id, direction)}
-              onUpdateDueDate={(newDueDate) => {
+              onUpdateDueDate={async (newDueDate) => {
                 const today = new Date();
                 today.setHours(0, 0, 0, 0);
 
@@ -212,17 +279,32 @@ export default function TodoList({
                     toast({
                       title: "Invalid Due Date",
                       description:
-                        "Task due date cannot be later than the list due date.",
+                        "tasks due date cannot be later than the list due date.",
                       variant: "destructive",
                     });
                     return;
                   }
                 }
 
-                const updatedTasks = list.tasks.map((t) =>
-                  t.id === task.id ? { ...t, dueDate: newDueDate } : t
-                );
-                onUpdate({ ...list, tasks: updatedTasks });
+                const { error } = await supabase
+                  .from("tasks")
+                  .update({ dueDate: newDueDate })
+                  .eq("id", task.id);
+
+                if (error) {
+                  toast({
+                    title: "Update Failed",
+                    description: error.message,
+                    variant: "destructive",
+                  });
+                } else {
+                  onUpdate({
+                    ...list,
+                    tasks: list.tasks.map((t) =>
+                      t.id === task.id ? { ...t, dueDate: newDueDate } : t
+                    ),
+                  });
+                }
               }}
             />
           ))}
@@ -231,27 +313,34 @@ export default function TodoList({
           onClick={() => setShowAddTaskDialog(true)}
           className="mt-4 bg-secondary border-secondary hover:bg-secondary-hover text-white"
         >
-          Add Task
+          Add tasks
         </Button>
       </CardContent>
       <AddTaskDialog
         isOpen={showAddTaskDialog}
         onClose={() => setShowAddTaskDialog(false)}
-        onAddTask={(title, description, dueDate) => {
-          if (
-            dueDate &&
-            list.dueDate &&
-            new Date(dueDate) > new Date(list.dueDate)
-          ) {
+        onAddTask={async (title, description, dueDate) => {
+          // Ensure list.tasks is defined and default to an empty array if it's not
+          const tasks = list.tasks || [];
+
+          // Use the length of tasks to determine the position
+          const { error } = await supabase.from("tasks").insert({
+            listID: list.id,
+            title,
+            description,
+            dueDate,
+            position: tasks.length + 1, // Use tasks.length safely
+          });
+
+          if (error) {
             toast({
-              title: "Invalid Due Date",
-              description:
-                "Task due date cannot be later than the list due date.",
+              title: "Add Task Failed",
+              description: error.message,
               variant: "destructive",
             });
-            return;
+          } else {
+            onAddTask(list.id, title, description, dueDate);
           }
-          onAddTask(list.id, title, description, dueDate);
         }}
         listTitle={list.title}
         listDueDate={list.dueDate ?? ""}

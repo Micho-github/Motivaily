@@ -9,12 +9,13 @@ import {
   EyeOff,
   Eye,
 } from "lucide-react";
-import { Task } from "@/types";
+import { tasks } from "@/types";
 import InfoDialog from "./InfoDialog";
 import DueDateWarning from "./DueDateWarning";
+import { useToast } from "@/hooks/use-toast";
 
 interface TaskItemProps {
-  task: Task;
+  task: tasks;
   onToggle: () => void;
   onDelete: () => void;
   onToggleVisibility: () => void;

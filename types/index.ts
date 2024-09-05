@@ -1,22 +1,26 @@
 import { UUID } from "crypto";
 
-export interface Task {
-  id: number;
+export interface tasks {
+  listID: string;
+  id: string;
   title: string;
-  description: string;
+  description: string | null;
   completed: boolean;
   hidden: boolean;
   dueDate: string | null;
+  position: number;
 }
 
-export interface TodoList {
-  id: number;
+export interface lists {
+  id: string;
+  userid: string;
   title: string;
-  description: string;
+  description: string | null;
   priority: "Low" | "Medium" | "High" | "Critical";
   dueDate: string | null;
   hidden: boolean;
-  tasks: Task[];
+  position: number;
+  tasks: tasks[];
 }
 
 export interface users {
