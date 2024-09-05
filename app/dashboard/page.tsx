@@ -68,12 +68,12 @@ export default function Index() {
     isOpen: boolean;
     type: string;
     id: string | null;
-    listId: string | null;
+    listID: string | null;
   }>({
     isOpen: false,
     type: "",
     id: null,
-    listId: null,
+    listID: null,
   });
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [showHidden, setShowHidden] = useState(false);
@@ -138,7 +138,7 @@ export default function Index() {
   );
 
   const deleteList = useCallback((id: string) => {
-    setConfirmDelete({ isOpen: true, type: "list", id, listId: null });
+    setConfirmDelete({ isOpen: true, type: "list", id, listID: null });
   }, []);
 
   const updateList = useCallback(
@@ -192,12 +192,12 @@ export default function Index() {
   );
 
   const checkListCompletion = useCallback(
-    async (listId: string) => {
+    async (listID: string) => {
       // Fetch the list and its tasks from Supabase
       const { data: listData, error: listError } = await supabase
         .from("lists")
         .select("*, tasks(*)")
-        .eq("id", listId)
+        .eq("id", listID)
         .single();
 
       if (listError) {
@@ -217,7 +217,7 @@ export default function Index() {
       const { error: updateError } = await supabase
         .from("lists")
         .update({ hidden: allTasksCompleted })
-        .eq("id", listId);
+        .eq("id", listID);
 
       if (updateError) {
         console.error(updateError);
@@ -228,12 +228,12 @@ export default function Index() {
 
   const addTask = useCallback(
     async (
-      listId: string,
+      listID: string,
       taskTitle: string,
       taskDescription: string | null,
       taskDueDate: string | null
     ) => {
-      const list = lists.find((list) => list.id === listId);
+      const list = lists.find((list) => list.id === listID);
       const taskCount = list?.tasks?.length ?? 0;
 
       // Create a new task object
@@ -243,7 +243,7 @@ export default function Index() {
         completed: false,
         hidden: false,
         dueDate: taskDueDate,
-        listID: listId,
+        listID: listID,
         position: taskCount + 1,
       };
 
@@ -261,7 +261,7 @@ export default function Index() {
 
       setLists((prevLists) =>
         prevLists.map((list) =>
-          list.id === listId
+          list.id === listID
             ? {
                 ...list,
                 tasks: (list.tasks || []).map((task) =>
@@ -279,10 +279,10 @@ export default function Index() {
   );
 
   const toggleTask = useCallback(
-    (listId: string, taskId: string) => {
+    (listID: string, taskId: string) => {
       setLists((prevLists) =>
         prevLists.map((list) => {
-          if (list.id === listId) {
+          if (list.id === listID) {
             const updatedTasks = list.tasks.map((task) =>
               task.id === taskId
                 ? { ...task, completed: !task.completed }
@@ -297,44 +297,44 @@ export default function Index() {
                   ?.completed,
               })
               .eq("id", taskId)
-              .eq("listID", listId);
+              .eq("listID", listID);
 
             return { ...list, tasks: updatedTasks };
           }
           return list;
         })
       );
-      checkListCompletion(listId);
+      checkListCompletion(listID);
     },
     [checkListCompletion, supabase]
   );
 
-  const deleteTask = useCallback((listId: string, taskId: string) => {
-    setConfirmDelete({ isOpen: true, type: "task", id: taskId, listId });
+  const deleteTask = useCallback((listID: string, taskId: string) => {
+    setConfirmDelete({ isOpen: true, type: "task", id: taskId, listID });
   }, []);
 
   const toggleListVisibility = useCallback(
-    async (listId: string) => {
+    async (listID: string) => {
       setLists((prevLists) =>
         prevLists.map((list) =>
-          list.id === listId ? { ...list, hidden: !list.hidden } : list
+          list.id === listID ? { ...list, hidden: !list.hidden } : list
         )
       );
 
       // Update list visibility in Supabase
       await supabase
         .from("lists")
-        .update({ hidden: !lists.find((list) => list.id === listId)?.hidden })
-        .eq("id", listId);
+        .update({ hidden: !lists.find((list) => list.id === listID)?.hidden })
+        .eq("id", listID);
     },
     [lists, supabase]
   );
 
   const toggleTaskVisibility = useCallback(
-    (listId: string, taskId: string) => {
+    (listID: string, taskId: string) => {
       setLists((prevLists) =>
         prevLists.map((list) => {
-          if (list.id === listId) {
+          if (list.id === listID) {
             const updatedTasks = list.tasks.map((task) =>
               task.id === taskId ? { ...task, hidden: !task.hidden } : task
             );
@@ -369,7 +369,7 @@ export default function Index() {
       await supabase.from("tasks").delete().eq("id", confirmDelete.id);
       setLists((prevLists) =>
         prevLists.map((list) => {
-          if (list.id === confirmDelete.listId) {
+          if (list.id === confirmDelete.listID) {
             return {
               ...list,
               tasks: list.tasks.filter((task) => task.id !== confirmDelete.id),
@@ -379,7 +379,7 @@ export default function Index() {
         })
       );
     }
-    setConfirmDelete({ isOpen: false, type: "", id: null, listId: null });
+    setConfirmDelete({ isOpen: false, type: "", id: null, listID: null });
   }, [confirmDelete, supabase]);
 
   const applyFilters = useCallback((newFilters: typeof filters) => {
@@ -424,7 +424,7 @@ export default function Index() {
                 isOpen: false,
                 type: "",
                 id: null,
-                listId: null,
+                listID: null,
               })
             }
             onConfirm={handleConfirmDelete}
