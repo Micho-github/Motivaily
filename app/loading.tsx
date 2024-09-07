@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import styles from "@/components/animations/animation.module.css";
 
-export default function Component() {
+export default function Loading() {
   const [fillPercentage, setFillPercentage] = useState(0);
   const [isGlowing, setIsGlowing] = useState(false);
 

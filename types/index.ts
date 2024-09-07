@@ -31,4 +31,6 @@ export interface users {
   isactive: boolean;
   avatar_url: any;
   created_at: Date;
+  istermsaccepted: boolean;
+  isfirstlogin: boolean;
 }
