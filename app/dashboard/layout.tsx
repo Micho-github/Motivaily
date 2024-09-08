@@ -32,6 +32,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { PathLinks } from "@/components/AppLayout/PathLinks";
 import Terms_and_Conditions from "@/components/AppLayout/Terms";
 import Loading from "../loading";
+import FirstLogin from "@/components/AppLayout/FirstLogin";
 
 type MenuItem = {
   icon: React.ElementType;
@@ -181,6 +182,7 @@ export default function CompactGridLayout({
   }, []);
 
   const shouldShowTerms = userInfo?.istermsaccepted === false;
+  const isFirstLogin = userInfo?.isfirstlogin === true;
 
   if (loading) {
     return <Loading />;
@@ -192,6 +194,7 @@ export default function CompactGridLayout({
         <Terms_and_Conditions userInfo={userInfo} />
         </>
       ) : (
+        isFirstLogin ? <FirstLogin userInfo={userInfo}/> :
         <>
           {/* Compact Sidebar */}
           <aside

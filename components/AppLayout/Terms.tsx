@@ -22,46 +22,6 @@ export default function TermsAndConditions({
 }) {
   const [isAcceptLoading, setIsAcceptLoading] = useState(false);
   const [isSuccessful, setIsSuccessful] = useState(false);
-  const [scrolledToBottom, setScrolledToBottom] = useState(false);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  const handleScroll = () => {
-    const container = contentRef.current;
-    if (!container) {
-      console.warn("Scroll handler triggered without ref");
-      return;
-    }
-    const { scrollTop, scrollHeight, clientHeight } = container;
-    console.log(
-      `scrollTop: ${scrollTop}, clientHeight: ${clientHeight}, scrollHeight: ${scrollHeight}`
-    );
-
-    if (scrollTop + clientHeight >= scrollHeight - 2) {
-      console.log("Scrolled to the bottom");
-      setScrolledToBottom(true);
-      container.removeEventListener("scroll", handleScroll);
-    } else {
-      console.log("Not yet scrolled to the bottom");
-    }
-  };
-
-  useLayoutEffect(() => {
-    console.log("contentRef:", contentRef);
-    const container = contentRef.current;
-    if (container) {
-      console.log("Container found:", container);
-      console.log("Adding scroll event listener");
-      container.addEventListener("scroll", handleScroll);
-    } else {
-      console.log("contentRef is not attached properly");
-    }
-    return () => {
-      if (container) {
-        console.log("Removing scroll event listener");
-        container.removeEventListener("scroll", handleScroll);
-      }
-    };
-  }, [contentRef]);
 
   const supabase = createClient();
 
@@ -122,7 +82,6 @@ export default function TermsAndConditions({
           </DialogDescription>
         </div>
         <div
-          
           className="overflow-y-auto p-6 max-w-none space-y-2 text-sm leading-relaxed"
           aria-live="polite"
         >
@@ -180,7 +139,7 @@ export default function TermsAndConditions({
           </DialogClose>
           <Button
             onClick={handleAccept}
-            disabled={!scrolledToBottom || isAcceptLoading || isSuccessful}
+            disabled={isAcceptLoading || isSuccessful}
             className="bg-secondary hover:bg-secondary-hover text-white flex items-center justify-center px-5"
             aria-live="assertive"
           >
